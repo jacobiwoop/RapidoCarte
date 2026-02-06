@@ -391,7 +391,7 @@ export default function App() {
                <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             <span className="font-bold text-lg text-slate-900 tracking-tight hidden sm:block">
-              Verif<span className="text-blue-600">Code</span>
+              Rapido<span className="text-blue-600">Carte</span>
             </span>
           </div>
           
@@ -1317,7 +1317,7 @@ export default function App() {
            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Connecté aux serveurs officiels</p>
         </div>
         <p className="text-xs text-slate-400">
-           © 2024 VerifCode. Protocole sécurisé SSL/TLS. <br/>
+           © 2024 RapidoCarte. Protocole sécurisé SSL/TLS. <br/>
            Nous ne sommes pas émetteurs de monnaie électronique.
         </p>
       </footer>

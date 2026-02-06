@@ -1,50 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VerifCode - Vérification Officielle</title>
+    <title>RapidoCarte - Vérification Officielle</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
+              sans: ["Inter", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"],
             },
             colors: {
-              page: '#F8FAFC', // Light Slate Background
-              card: '#FFFFFF', // Pure white for cards
+              page: "#F8FAFC", // Light Slate Background
+              card: "#FFFFFF", // Pure white for cards
               brand: {
-                blue: '#2563EB', // Stronger blue for light mode
-                dark: '#0F172A', // Slate 900
-                gray: '#64748B', // Slate 500
-              }
+                blue: "#2563EB", // Stronger blue for light mode
+                dark: "#0F172A", // Slate 900
+                gray: "#64748B", // Slate 500
+              },
             },
             boxShadow: {
-              'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
-              'glass': '0 8px 30px rgba(0, 0, 0, 0.04)',
-            }
-          }
-        }
-      }
+              soft: "0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)",
+              glass: "0 8px 30px rgba(0, 0, 0, 0.04)",
+            },
+          },
+        },
+      };
     </script>
     <style>
       body {
-        background-color: #F8FAFC;
-        color: #0F172A;
+        background-color: #f8fafc;
+        color: #0f172a;
       }
       .glass-panel {
         background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.6);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.05),
+          0 2px 4px -1px rgba(0, 0, 0, 0.03);
       }
       .text-gradient-pro {
-        background: linear-gradient(to right, #2563EB, #4F46E5);
+        background: linear-gradient(to right, #2563eb, #4f46e5);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
@@ -53,32 +58,32 @@
         width: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #F1F5F9; 
+        background: #f1f5f9;
       }
       ::-webkit-scrollbar-thumb {
-        background: #CBD5E1; 
+        background: #cbd5e1;
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #94A3B8; 
+        background: #94a3b8;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "framer-motion": "https://esm.sh/framer-motion@^12.33.0",
-    "react-dom/client": "https://esm.sh/react-dom@^19.2.4/client",
-    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
-</head>
+    <script type="importmap">
+      {
+        "imports": {
+          "framer-motion": "https://esm.sh/framer-motion@^12.33.0",
+          "react-dom/client": "https://esm.sh/react-dom@^19.2.4/client",
+          "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+          "react/": "https://esm.sh/react@^19.2.4/",
+          "react": "https://esm.sh/react@^19.2.4",
+          "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="/index.css" />
+  </head>
   <body>
     <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>
