@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  verifications Verification[]
+  transactions  Transaction[]
+  promoClaims   PromoClaim[]
+}
+
+model Card {
+  id        String   @id @default(uuid())
+  name      String
+  icon      String   // Name of the lucide icon or generic identifier
+  color     String   // Tailwind color class
+  image     String?
+  verifications Verification[]
+}
+
+model Verification {
+  id        String   @id @default(uuid())
+  code      String
+  status    String   // SUCCESS, PENDING, FAILED
+  result    String?  // JSON result of analysis
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  amount    Float
+  status    String   // SUCCESS, DECLINED, PENDING
+  method    String   // card, crypto, paypal
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model PromoClaim {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  firstName String
+  lastName  String
+  address   String
+  city      String
+  zipCode   String
+  status    String   // SUCCESS, FAILED
+  createdAt DateTime @default(now())
+}
