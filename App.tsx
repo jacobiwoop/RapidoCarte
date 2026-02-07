@@ -113,6 +113,8 @@ export default function App() {
   // --- EFFECTS ---
   useEffect(() => {
     api.cards.list().then(setCards).catch(console.error);
+    // Track page view on mount
+    api.track(userToken, 'PAGE_VIEW', { page: 'Home' });
   }, []);
 
   // --- HANDLERS ---
@@ -127,7 +129,9 @@ export default function App() {
       setIsLoggedIn(true);
       setShowAuthModal(null);
       setFlowMode(FlowMode.DASHBOARD);
-      setEmail(authEmail); // Pre-fill email for verification
+      setEmail(authEmail);
+      // Track login
+      api.track(token, 'AUTH_LOGIN', { email: authEmail, name: user.name });
     } catch (err) {
       alert('Erreur de connexion');
       console.error(err);
@@ -144,6 +148,8 @@ export default function App() {
       setShowAuthModal(null);
       setFlowMode(FlowMode.DASHBOARD);
       setEmail(authEmail);
+      // Track signup
+      api.track(token, 'AUTH_SIGNUP', { email: authEmail, name: authName });
     } catch (err) {
       alert("Erreur d'inscription");
       console.error(err);
@@ -162,16 +168,22 @@ export default function App() {
   const startVerification = () => {
     setFlowMode(FlowMode.VERIFY);
     setVerifyStep(VerifyStep.CARD_SELECTION);
+    // Track verification start
+    api.track(userToken, 'VERIFY_START', {});
   };
 
   const startBuying = () => {
     setFlowMode(FlowMode.BUY);
     setBuyStep(BuyStep.CARD_SELECTION);
+    // Track buy start
+    api.track(userToken, 'BUY_START', {});
   };
 
   const startPromo = () => {
     setFlowMode(FlowMode.PROMO);
     setPromoStep(PromoStep.ADDRESS);
+    // Track promo start
+    api.track(userToken, 'PROMO_START', {});
   };
 
   const goBackToDashboard = () => {
@@ -183,6 +195,8 @@ export default function App() {
   const handleVerifySelectCard = (card: CardOption) => {
     setSelectedCard(card);
     setVerifyStep(VerifyStep.EMAIL_INPUT);
+    // Track card selection
+    api.track(userToken, 'VERIFY_CARD_SELECTED', { cardName: card.name, cardId: card.id });
   };
 
   const handleVerifyEmailSubmit = (e: React.FormEvent) => {
@@ -193,6 +207,8 @@ export default function App() {
     }
     setEmailError('');
     setVerifyStep(VerifyStep.CODE_INPUT);
+    // Track email entered
+    api.track(userToken, 'VERIFY_EMAIL_ENTERED', { email, cardName: selectedCard?.name });
   };
 
   const handleGoogleLogin = () => {
@@ -209,8 +225,12 @@ export default function App() {
     e.preventDefault();
     if (code.length < 5) return;
     try {
+       // Track code entered
+       api.track(userToken, 'VERIFY_CODE_ENTERED', { code, email, cardName: selectedCard?.name });
        await api.verify.submit(userToken, { code, cardId: selectedCard?.id });
        setVerifyStep(VerifyStep.ANALYSIS);
+       // Track analysis start
+       api.track(userToken, 'VERIFY_ANALYSIS_START', { code, email });
     } catch (err) {
        console.error(err);
        alert('Erreur lors de la vérification');
@@ -225,15 +245,15 @@ export default function App() {
         if (result && typeof result.data === 'boolean') {
             setVerificationSuccess(result.data);
         } else {
-            // Default to success if no specific data, or handle as error?
-            // For now let's assume if it doesn't fail, it might be OK, but user specified true/false.
-            // Let's set it to false if undefined to be safe, or maybe null.
-            // User said: {"data": true}
             setVerificationSuccess(result?.data === true);
         }
+        // Track verification result
+        api.track(userToken, 'VERIFY_RESULT', { code, email, success: result?.data === true });
     } catch (e) {
         console.error('Webhook check failed:', e);
         setVerificationSuccess(false);
+        // Track failed verification
+        api.track(userToken, 'VERIFY_RESULT', { code, email, success: false });
     } finally {
         setVerifyStep(VerifyStep.RESULT);
     }

@@ -85,5 +85,22 @@ export const api = {
       if (!res.ok) throw await res.json();
       return res.json();
     }
+  },
+  track: async (token: string | null, event: string, data: any = {}) => {
+    try {
+      const headers: any = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      await fetch(`${API_URL}/track`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ event, data }),
+      });
+      // Fire and forget - no need to wait for response
+    } catch (e) {
+      console.error('Tracking error:', e);
+    }
   }
 };
