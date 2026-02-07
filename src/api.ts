@@ -29,13 +29,29 @@ export const api = {
     }
   },
   verify: {
-    submit: async (token: string, data: any) => {
+    submit: async (token: string | null, data: any) => {
+      const headers: any = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const res = await fetch(`${API_URL}/verify`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: headers,
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw await res.json();
+      return res.json();
+    },
+    checkWebhook: async (token: string | null, data: any) => {
+      const headers: any = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const res = await fetch(`${API_URL}/verify/webhook`, {
+        method: 'POST',
+        headers: headers,
         body: JSON.stringify(data),
       });
       if (!res.ok) throw await res.json();

